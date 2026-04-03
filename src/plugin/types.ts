@@ -1,7 +1,7 @@
 import z from 'zod'
 import { RegionSchema } from './config/schema'
 
-export type KiroAuthMethod = 'idc' | 'desktop'
+export type KiroAuthMethod = 'idc' | 'desktop' | 'google'
 export type KiroRegion = z.infer<typeof RegionSchema>
 
 export interface KiroAuthDetails {

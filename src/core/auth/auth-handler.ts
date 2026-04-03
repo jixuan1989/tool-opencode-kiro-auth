@@ -2,6 +2,7 @@ import type { AuthHook } from '@opencode-ai/plugin'
 import type { AccountRepository } from '../../infrastructure/database/account-repository.js'
 import { RegionSchema } from '../../plugin/config/schema.js'
 import * as logger from '../../plugin/logger.js'
+import { GoogleAuthMethod } from './google-auth-method.js'
 import { IdcAuthMethod } from './idc-auth-method.js'
 
 export class AuthHandler {
@@ -37,9 +38,29 @@ export class AuthHandler {
       return []
     }
 
+    const googleMethod = new GoogleAuthMethod(this.config, this.repository, this.accountManager)
     const idcMethod = new IdcAuthMethod(this.config, this.repository, this.accountManager)
 
     return [
+      {
+        label: 'Google Account (Kiro)',
+        type: 'oauth' as const,
+        prompts: [
+          {
+            type: 'text' as const,
+            key: 'region',
+            message: 'Region (leave blank for us-east-1)',
+            placeholder: 'us-east-1',
+            validate: (value: string) => {
+              if (!value) return undefined
+              return RegionSchema.safeParse(value.trim()).success
+                ? undefined
+                : 'Please enter a valid AWS region'
+            }
+          }
+        ],
+        authorize: (inputs?: any) => googleMethod.authorize(inputs)
+      },
       {
         label: 'AWS Builder ID / IAM Identity Center',
         type: 'oauth' as const,

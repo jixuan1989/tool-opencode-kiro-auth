@@ -8,6 +8,7 @@ export function decodeRefreshToken(refresh: string): RefreshParts {
   if (authMethod === 'idc')
     return { refreshToken, clientId: parts[1], clientSecret: parts[2], authMethod: 'idc' }
   if (authMethod === 'desktop') return { refreshToken, authMethod: 'desktop' }
+  if (authMethod === 'google') return { refreshToken, authMethod: 'google' }
   return { refreshToken, authMethod: 'desktop' }
 }
 
@@ -20,6 +21,9 @@ export function encodeRefreshToken(parts: RefreshParts): string {
   if (parts.authMethod === 'idc') {
     if (!parts.clientId || !parts.clientSecret) throw new Error('Missing credentials')
     return `${parts.refreshToken}|${parts.clientId}|${parts.clientSecret}|idc`
+  }
+  if (parts.authMethod === 'google') {
+    return `${parts.refreshToken}|google`
   }
   return `${parts.refreshToken}|desktop`
 }

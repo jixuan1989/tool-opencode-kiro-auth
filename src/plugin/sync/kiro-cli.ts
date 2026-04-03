@@ -45,7 +45,13 @@ export async function syncFromKiroCli() {
         if (!data) continue
 
         const isIdc = row.key.includes('odic')
-        const authMethod = isIdc ? 'idc' : 'desktop'
+        const isSocial = row.key.includes('social')
+        let authMethod: 'idc' | 'desktop' | 'google' = isIdc ? 'idc' : 'desktop'
+
+        if (isSocial) {
+          authMethod = 'google'
+        }
+
         const oidcRegion = normalizeRegion(data.region)
         let profileArn: string | undefined = data.profile_arn || data.profileArn
         if (!profileArn && isIdc) profileArn = activeProfileArn || readActiveProfileArnFromKiroCli()
@@ -210,7 +216,14 @@ export async function writeToKiroCli(acc: any) {
     const cliDb = new Database(dbPath)
     cliDb.run('PRAGMA busy_timeout = 5000')
     const rows = cliDb.prepare('SELECT key, value FROM auth_kv').all() as any[]
-    const targetKey = acc.authMethod === 'idc' ? 'kirocli:odic:token' : 'kirocli:social:token'
+    let targetKey: string
+    if (acc.authMethod === 'idc') {
+      targetKey = 'kirocli:odic:token'
+    } else if (acc.authMethod === 'google') {
+      targetKey = 'kirocli:social:token'
+    } else {
+      targetKey = 'kirocli:social:token'
+    }
     const row = rows.find((r) => r.key === targetKey || r.key.endsWith(targetKey))
     if (row) {
       const data = JSON.parse(row.value)
