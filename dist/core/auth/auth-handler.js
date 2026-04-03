@@ -1,7 +1,7 @@
 import { RegionSchema } from '../../plugin/config/schema.js';
 import * as logger from '../../plugin/logger.js';
-import { IdcAuthMethod } from './idc-auth-method.js';
 import { GoogleAuthMethod } from './google-auth-method.js';
+import { IdcAuthMethod } from './idc-auth-method.js';
 export class AuthHandler {
     config;
     repository;
