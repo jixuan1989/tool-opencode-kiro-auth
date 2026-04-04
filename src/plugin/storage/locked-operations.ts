@@ -1,8 +1,27 @@
 import { createHash } from 'node:crypto'
 import { existsSync, promises as fs } from 'node:fs'
-import lockfile from 'proper-lockfile'
 import { isPermanentError } from '../health'
 import type { ManagedAccount } from '../types'
+
+type ProperLockfileModule = {
+  lock: (file: string, options?: any) => Promise<() => Promise<void>>
+}
+
+let lockfileModulePromise: Promise<ProperLockfileModule> | null = null
+
+async function getLockfileModule(): Promise<ProperLockfileModule> {
+  if (!lockfileModulePromise) {
+    lockfileModulePromise = import('proper-lockfile').then((mod: any) => {
+      const candidates = [mod, mod?.default, mod?.default?.default]
+      const candidate = candidates.find((c: any) => c && typeof c.lock === 'function')
+      if (!candidate) {
+        throw new TypeError('Failed to load proper-lockfile lock function')
+      }
+      return candidate as ProperLockfileModule
+    })
+  }
+  return lockfileModulePromise
+}
 
 const LOCK_OPTIONS = {
   stale: 10000,
@@ -26,7 +45,10 @@ export async function withDatabaseLock<T>(dbPath: string, fn: () => Promise<T>):
 
   let release: (() => Promise<void>) | null = null
   try {
-    release = await lockfile.lock(dbPath, LOCK_OPTIONS)
+    try {
+      const lockfile = await getLockfileModule()
+      release = await lockfile.lock(dbPath, LOCK_OPTIONS)
+    } catch {}
     return await fn()
   } finally {
     if (release) {

@@ -1,7 +1,5 @@
-import { RegionSchema } from '../../plugin/config/schema.js';
 import * as logger from '../../plugin/logger.js';
 import { GoogleAuthMethod } from './google-auth-method.js';
-import { IdcAuthMethod } from './idc-auth-method.js';
 export class AuthHandler {
     config;
     repository;
@@ -33,64 +31,11 @@ export class AuthHandler {
             return [];
         }
         const googleMethod = new GoogleAuthMethod(this.config, this.repository, this.accountManager);
-        const idcMethod = new IdcAuthMethod(this.config, this.repository, this.accountManager);
         return [
             {
                 label: 'Google Account (Kiro)',
                 type: 'oauth',
-                prompts: [
-                    {
-                        type: 'text',
-                        key: 'region',
-                        message: 'Region (leave blank for us-east-1)',
-                        placeholder: 'us-east-1',
-                        validate: (value) => {
-                            if (!value)
-                                return undefined;
-                            return RegionSchema.safeParse(value.trim()).success
-                                ? undefined
-                                : 'Please enter a valid AWS region';
-                        }
-                    }
-                ],
                 authorize: (inputs) => googleMethod.authorize(inputs)
-            },
-            {
-                label: 'AWS Builder ID / IAM Identity Center',
-                type: 'oauth',
-                prompts: [
-                    {
-                        type: 'text',
-                        key: 'start_url',
-                        message: 'IAM Identity Center Start URL (leave blank for AWS Builder ID)',
-                        placeholder: 'https://your-company.awsapps.com/start',
-                        validate: (value) => {
-                            if (!value)
-                                return undefined;
-                            try {
-                                new URL(value);
-                                return undefined;
-                            }
-                            catch {
-                                return 'Please enter a valid URL';
-                            }
-                        }
-                    },
-                    {
-                        type: 'text',
-                        key: 'idc_region',
-                        message: 'IAM Identity Center region (sso_region) (leave blank for us-east-1)',
-                        placeholder: 'us-east-1',
-                        validate: (value) => {
-                            if (!value)
-                                return undefined;
-                            return RegionSchema.safeParse(value.trim()).success
-                                ? undefined
-                                : 'Please enter a valid AWS region';
-                        }
-                    }
-                ],
-                authorize: (inputs) => idcMethod.authorize(inputs)
             }
         ];
     }

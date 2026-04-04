@@ -1,7 +1,20 @@
 import { createHash } from 'node:crypto';
 import { existsSync, promises as fs } from 'node:fs';
-import lockfile from 'proper-lockfile';
 import { isPermanentError } from '../health';
+let lockfileModulePromise = null;
+async function getLockfileModule() {
+    if (!lockfileModulePromise) {
+        lockfileModulePromise = import('proper-lockfile').then((mod) => {
+            const candidates = [mod, mod?.default, mod?.default?.default];
+            const candidate = candidates.find((c) => c && typeof c.lock === 'function');
+            if (!candidate) {
+                throw new TypeError('Failed to load proper-lockfile lock function');
+            }
+            return candidate;
+        });
+    }
+    return lockfileModulePromise;
+}
 const LOCK_OPTIONS = {
     stale: 10000,
     retries: {
@@ -21,7 +34,11 @@ export async function withDatabaseLock(dbPath, fn) {
     }
     let release = null;
     try {
-        release = await lockfile.lock(dbPath, LOCK_OPTIONS);
+        try {
+            const lockfile = await getLockfileModule();
+            release = await lockfile.lock(dbPath, LOCK_OPTIONS);
+        }
+        catch { }
         return await fn();
     }
     finally {

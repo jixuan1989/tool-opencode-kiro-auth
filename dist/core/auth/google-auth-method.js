@@ -157,6 +157,37 @@ export class GoogleAuthMethod {
         this.accountManager = accountManager;
     }
     async authorize(inputs) {
+        const { syncFromKiroCli } = await import('../../plugin/sync/kiro-cli.js');
+        await syncFromKiroCli();
+        this.repository.invalidateCache();
+        const existingAccounts = await this.repository.findAll();
+        const reusableGoogleAccount = existingAccounts
+            .filter((a) => a.authMethod === 'google' &&
+            typeof a.refreshToken === 'string' &&
+            a.refreshToken.length > 0 &&
+            typeof a.accessToken === 'string' &&
+            a.accessToken.length > 0)
+            .sort((a, b) => {
+            if (a.isHealthy !== b.isHealthy)
+                return a.isHealthy ? -1 : 1;
+            return (b.expiresAt || 0) - (a.expiresAt || 0);
+        })[0];
+        if (reusableGoogleAccount) {
+            this.accountManager?.addAccount?.(reusableGoogleAccount);
+            logger.log('Google authorize: reusing existing Kiro DB account', {
+                accountId: reusableGoogleAccount.id,
+                email: reusableGoogleAccount.email,
+                expiresAt: reusableGoogleAccount.expiresAt
+            });
+            return {
+                url: 'https://kiro.dev',
+                instructions: 'Using existing Google session from Kiro DB.',
+                method: 'auto',
+                callback: async () => {
+                    return { type: 'success', key: reusableGoogleAccount.accessToken };
+                }
+            };
+        }
         const configuredServiceRegion = this.config.default_region;
         const oidcRegion = normalizeRegion(inputs?.region || this.config.idc_region);
         logger.log('Google authorize: resolved defaults', {
