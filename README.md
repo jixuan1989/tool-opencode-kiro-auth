@@ -16,23 +16,31 @@ This plugin lets you use Kiro's AI models (Claude Sonnet/Opus/Haiku, Nova SWE, G
 
 ## Supported Models
 
-| Model ID | Description |
-|---|---|
-| `claude-sonnet-4-6` | Claude Sonnet 4.6 |
-| `claude-sonnet-4-6-thinking` | Claude Sonnet 4.6 with thinking |
-| `claude-sonnet-4-6-1m` | Claude Sonnet 4.6 (1M context) |
-| `claude-opus-4-6` | Claude Opus 4.6 |
-| `claude-opus-4-6-thinking` | Claude Opus 4.6 with thinking |
-| `claude-opus-4-6-1m` | Claude Opus 4.6 (1M context) |
-| `claude-sonnet-4-5` | Claude Sonnet 4.5 |
-| `claude-opus-4-5` | Claude Opus 4.5 |
-| `claude-sonnet-4` | Claude Sonnet 4 |
-| `claude-haiku-4-5` | Claude Haiku 4.5 |
-| `nova-swe` | Amazon Nova SWE |
-| `gpt-oss-120b` | GPT OSS 120B |
-| `qwen3-coder-480b` | Qwen3 Coder 480B |
-| `minimax-m2` | MiniMax M2 |
-| `kimi-k2-thinking` | Kimi K2 Thinking |
+| Model ID                        | Description                              |
+| ------------------------------- | ---------------------------------------- |
+| `claude-sonnet-4-6`             | Claude Sonnet 4.6                        |
+| `claude-sonnet-4-6-thinking`    | Claude Sonnet 4.6 with thinking          |
+| `claude-sonnet-4-6-1m`          | Claude Sonnet 4.6 (1M context)           |
+| `claude-opus-4-6`               | Claude Opus 4.6                          |
+| `claude-opus-4-6-thinking`      | Claude Opus 4.6 with thinking            |
+| `claude-opus-4-6-1m`            | Claude Opus 4.6 (1M context)             |
+| `claude-sonnet-4-5`             | Claude Sonnet 4.5                        |
+| `claude-opus-4-5`               | Claude Opus 4.5                          |
+| `claude-sonnet-4`               | Claude Sonnet 4                          |
+| `claude-haiku-4-5`              | Claude Haiku 4.5                         |
+| `claude-haiku-4-5-thinking`     | Claude Haiku 4.5 with thinking           |
+| `claude-sonnet-4-5-thinking`    | Claude Sonnet 4.5 with thinking          |
+| `claude-sonnet-4-5-1m`          | Claude Sonnet 4.5 (1M context)           |
+| `claude-sonnet-4-5-1m-thinking` | Claude Sonnet 4.5 (1M context, thinking) |
+| `claude-sonnet-4-6-1m-thinking` | Claude Sonnet 4.6 (1M context, thinking) |
+| `claude-opus-4-5-thinking`      | Claude Opus 4.5 with thinking            |
+| `claude-opus-4-6-1m-thinking`   | Claude Opus 4.6 (1M context, thinking)   |
+| `claude-3-7-sonnet`             | Claude 3.7 Sonnet                        |
+| `nova-swe`                      | Amazon Nova SWE                          |
+| `gpt-oss-120b`                  | GPT OSS 120B                             |
+| `qwen3-coder-480b`              | Qwen3 Coder 480B                         |
+| `minimax-m2`                    | MiniMax M2                               |
+| `kimi-k2-thinking`              | Kimi K2 Thinking                         |
 
 ## Installation
 
@@ -45,15 +53,15 @@ bun install
 bun run build
 ```
 
+`bun install` only installs dependencies. `bun run build` will also add this local plugin and the full built-in Kiro model list to your OpenCode config if `~/.config/opencode/opencode.json` already exists. If OpenCode is not installed yet, the script will print a reminder and you can run `bun run configure-opencode` later.
+
 ### 2. Configure OpenCode
 
 Edit `~/.config/opencode/opencode.json`:
 
 ```jsonc
 {
-  "plugin": [
-    "/absolute/path/to/tool-opencode-kiro-auth"
-  ],
+  "plugin": ["/absolute/path/to/tool-opencode-kiro-auth"],
   "provider": {
     "kiro": {
       "models": {
@@ -66,8 +74,13 @@ Edit `~/.config/opencode/opencode.json`:
           "name": "Claude Opus 4.6",
           "limit": { "context": 200000, "output": 64000 },
           "modalities": { "input": ["text", "image", "pdf"], "output": ["text"] }
+        },
+        "claude-haiku-4-5": {
+          "name": "Claude Haiku 4.5",
+          "limit": { "context": 200000, "output": 64000 },
+          "modalities": { "input": ["text", "image", "pdf"], "output": ["text"] }
         }
-        // ... add more models from the table above as needed
+        // ... `bun run configure-opencode` writes the full built-in model list automatically
       }
     }
   }
