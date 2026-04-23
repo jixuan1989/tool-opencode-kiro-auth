@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 import { isLongContextModel, SUPPORTED_MODELS } from '../constants.js'
+import { resolveKiroModel } from '../plugin/models.js'
 
 describe('isLongContextModel', () => {
   test('returns true for all 1m model variants', () => {
@@ -22,5 +23,12 @@ describe('isLongContextModel', () => {
     expect(isLongContextModel('unknown-model')).toBe(false)
     expect(isLongContextModel('')).toBe(false)
     expect(isLongContextModel('claude-sonnet-4-6')).toBe(false)
+    expect(isLongContextModel('auto')).toBe(false)
+  })
+})
+
+describe('resolveKiroModel', () => {
+  test('supports auto model passthrough', () => {
+    expect(resolveKiroModel('auto')).toBe('auto')
   })
 })

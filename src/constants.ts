@@ -50,6 +50,7 @@ export const KIRO_CONSTANTS = {
 }
 
 export const MODEL_MAPPING: Record<string, string> = {
+  auto: 'auto',
   'claude-haiku-4-5': 'claude-haiku-4.5',
   'claude-haiku-4-5-thinking': 'claude-haiku-4.5',
   'claude-sonnet-4-5': 'claude-sonnet-4.5',
