@@ -20,6 +20,7 @@ function createModel(name, context = 200000) {
 }
 
 const BUILTIN_MODELS = {
+  auto: createModel('Kiro Auto'),
   'claude-haiku-4-5': createModel('Claude Haiku 4.5'),
   'claude-haiku-4-5-thinking': createModel('Claude Haiku 4.5 Thinking'),
   'claude-sonnet-4-5': createModel('Claude Sonnet 4.5'),
