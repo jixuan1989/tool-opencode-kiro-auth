@@ -18,6 +18,7 @@ This plugin lets you use Kiro's AI models (Claude Sonnet/Opus/Haiku, Nova SWE, G
 
 | Model ID | Description |
 |---|---|
+| `auto` | Kiro automatic model selection |
 | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
 | `claude-sonnet-4-6-thinking` | Claude Sonnet 4.6 with thinking |
 | `claude-sonnet-4-6-1m` | Claude Sonnet 4.6 (1M context) |
@@ -57,6 +58,11 @@ Edit `~/.config/opencode/opencode.json`:
   "provider": {
     "kiro": {
       "models": {
+        "auto": {
+          "name": "Kiro Auto",
+          "limit": { "context": 200000, "output": 64000 },
+          "modalities": { "input": ["text", "image", "pdf"], "output": ["text"] }
+        },
         "claude-sonnet-4-6": {
           "name": "Claude Sonnet 4.6",
           "limit": { "context": 200000, "output": 64000 },
@@ -85,7 +91,7 @@ If you already have an active Kiro IDE session, the plugin will automatically re
 
 ### 4. Use
 
-Launch OpenCode and select any `kiro/*` model (e.g. `kiro/claude-sonnet-4-6`).
+Launch OpenCode and select any `kiro/*` model (e.g. `kiro/auto` or `kiro/claude-sonnet-4-6`).
 
 ## How It Works
 

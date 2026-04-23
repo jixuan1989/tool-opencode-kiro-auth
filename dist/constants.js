@@ -46,6 +46,7 @@ export const KIRO_CONSTANTS = {
     ORIGIN_AI_EDITOR: 'AI_EDITOR'
 };
 export const MODEL_MAPPING = {
+    auto: 'auto',
     'claude-haiku-4-5': 'claude-haiku-4.5',
     'claude-haiku-4-5-thinking': 'claude-haiku-4.5',
     'claude-sonnet-4-5': 'claude-sonnet-4.5',
