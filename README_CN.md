@@ -18,23 +18,31 @@
 
 ## 支持的模型
 
-| 模型 ID | 说明 |
-|---|---|
-| `claude-sonnet-4-6` | Claude Sonnet 4.6 |
-| `claude-sonnet-4-6-thinking` | Claude Sonnet 4.6（思维模式） |
-| `claude-sonnet-4-6-1m` | Claude Sonnet 4.6（100万上下文） |
-| `claude-opus-4-6` | Claude Opus 4.6 |
-| `claude-opus-4-6-thinking` | Claude Opus 4.6（思维模式） |
-| `claude-opus-4-6-1m` | Claude Opus 4.6（100万上下文） |
-| `claude-sonnet-4-5` | Claude Sonnet 4.5 |
-| `claude-opus-4-5` | Claude Opus 4.5 |
-| `claude-sonnet-4` | Claude Sonnet 4 |
-| `claude-haiku-4-5` | Claude Haiku 4.5 |
-| `nova-swe` | Amazon Nova SWE |
-| `gpt-oss-120b` | GPT OSS 120B |
-| `qwen3-coder-480b` | Qwen3 Coder 480B |
-| `minimax-m2` | MiniMax M2 |
-| `kimi-k2-thinking` | Kimi K2 Thinking |
+| 模型 ID                         | 说明                                       |
+| ------------------------------- | ------------------------------------------ |
+| `claude-sonnet-4-6`             | Claude Sonnet 4.6                          |
+| `claude-sonnet-4-6-thinking`    | Claude Sonnet 4.6（思维模式）              |
+| `claude-sonnet-4-6-1m`          | Claude Sonnet 4.6（100万上下文）           |
+| `claude-opus-4-6`               | Claude Opus 4.6                            |
+| `claude-opus-4-6-thinking`      | Claude Opus 4.6（思维模式）                |
+| `claude-opus-4-6-1m`            | Claude Opus 4.6（100万上下文）             |
+| `claude-sonnet-4-5`             | Claude Sonnet 4.5                          |
+| `claude-opus-4-5`               | Claude Opus 4.5                            |
+| `claude-sonnet-4`               | Claude Sonnet 4                            |
+| `claude-haiku-4-5`              | Claude Haiku 4.5                           |
+| `claude-haiku-4-5-thinking`     | Claude Haiku 4.5（思维模式）               |
+| `claude-sonnet-4-5-thinking`    | Claude Sonnet 4.5（思维模式）              |
+| `claude-sonnet-4-5-1m`          | Claude Sonnet 4.5（100万上下文）           |
+| `claude-sonnet-4-5-1m-thinking` | Claude Sonnet 4.5（100万上下文，思维模式） |
+| `claude-sonnet-4-6-1m-thinking` | Claude Sonnet 4.6（100万上下文，思维模式） |
+| `claude-opus-4-5-thinking`      | Claude Opus 4.5（思维模式）                |
+| `claude-opus-4-6-1m-thinking`   | Claude Opus 4.6（100万上下文，思维模式）   |
+| `claude-3-7-sonnet`             | Claude 3.7 Sonnet                          |
+| `nova-swe`                      | Amazon Nova SWE                            |
+| `gpt-oss-120b`                  | GPT OSS 120B                               |
+| `qwen3-coder-480b`              | Qwen3 Coder 480B                           |
+| `minimax-m2`                    | MiniMax M2                                 |
+| `kimi-k2-thinking`              | Kimi K2 Thinking                           |
 
 ## 安装步骤
 
@@ -47,15 +55,15 @@ bun install
 bun run build
 ```
 
+`bun install` 只负责安装依赖。`bun run build` 会在 `~/.config/opencode/opencode.json` 已存在时，自动把当前本地插件路径和完整的内置 Kiro 模型列表写入 OpenCode 配置。如果这时还没有安装 OpenCode，脚本会给出提示，后续安装完成后执行 `bun run configure-opencode` 即可。
+
 ### 2. 配置 OpenCode
 
 编辑 `~/.config/opencode/opencode.json`：
 
 ```jsonc
 {
-  "plugin": [
-    "/你的绝对路径/tool-opencode-kiro-auth"
-  ],
+  "plugin": ["/你的绝对路径/tool-opencode-kiro-auth"],
   "provider": {
     "kiro": {
       "models": {
@@ -68,8 +76,13 @@ bun run build
           "name": "Claude Opus 4.6",
           "limit": { "context": 200000, "output": 64000 },
           "modalities": { "input": ["text", "image", "pdf"], "output": ["text"] }
+        },
+        "claude-haiku-4-5": {
+          "name": "Claude Haiku 4.5",
+          "limit": { "context": 200000, "output": 64000 },
+          "modalities": { "input": ["text", "image", "pdf"], "output": ["text"] }
         }
-        // ... 按需从上面的模型表中添加更多模型
+        // ... `bun run configure-opencode` 会自动写入完整内置模型列表
       }
     }
   }
