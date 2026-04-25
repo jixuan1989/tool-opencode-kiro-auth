@@ -29,6 +29,7 @@ export declare class ErrorHandler {
     shouldRetry: boolean
     newContext?: RequestContext
     switchAccount?: boolean
+    forceRefresh?: boolean
   }>
   handleNetworkError(
     error: any,

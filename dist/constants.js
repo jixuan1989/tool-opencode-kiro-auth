@@ -1,5 +1,42 @@
+import { createHash } from 'node:crypto';
+import { execSync } from 'node:child_process';
+import { platform } from 'node:os';
 import { RegionSchema } from './plugin/config/schema';
 const VALID_REGIONS = Object.values(RegionSchema.Values);
+let _cachedMachineId;
+/**
+ * Returns a stable machine identifier matching node-machine-id behavior.
+ * macOS: SHA-256 of IOPlatformUUID
+ * Linux: SHA-256 of /var/lib/dbus/machine-id or /etc/machine-id
+ * Windows: SHA-256 of MachineGuid from registry
+ */
+export function getMachineId() {
+    if (_cachedMachineId)
+        return _cachedMachineId;
+    try {
+        const p = platform();
+        let raw;
+        if (p === 'darwin') {
+            raw = execSync("ioreg -rd1 -c IOPlatformExpertDevice | grep IOPlatformUUID | awk -F'\"' '{print $4}'", { encoding: 'utf-8', timeout: 3000 }).trim();
+        }
+        else if (p === 'win32') {
+            raw = execSync('REG QUERY HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Cryptography /v MachineGuid', { encoding: 'utf-8', timeout: 3000 })
+                .split('REG_SZ')[1]
+                ?.trim() || '';
+        }
+        else {
+            raw = execSync('cat /var/lib/dbus/machine-id 2>/dev/null || cat /etc/machine-id', {
+                encoding: 'utf-8',
+                timeout: 3000
+            }).trim();
+        }
+        _cachedMachineId = createHash('sha256').update(raw).digest('hex');
+    }
+    catch {
+        _cachedMachineId = 'UNDETERMINED_MACHINE_ID';
+    }
+    return _cachedMachineId;
+}
 export function isValidRegion(region) {
     return VALID_REGIONS.includes(region);
 }
@@ -40,8 +77,8 @@ export const KIRO_CONSTANTS = {
     DEFAULT_REGION: 'us-east-1',
     AXIOS_TIMEOUT: 120000,
     USER_AGENT: 'KiroIDE',
-    SDK_VERSION: '3.738.0',
-    SDK_VERSION_USAGE: '3.0.0',
+    CW_CLIENT_VERSION: '1.0.34',
+    KIRO_IDE_VERSION: '0.11.133',
     CHAT_TRIGGER_TYPE_MANUAL: 'MANUAL',
     ORIGIN_AI_EDITOR: 'AI_EDITOR'
 };

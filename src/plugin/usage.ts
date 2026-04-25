@@ -1,3 +1,6 @@
+import * as crypto from 'crypto'
+import * as os from 'os'
+import { KIRO_CONSTANTS, getMachineId } from '../constants'
 import { KiroAuthDetails, ManagedAccount } from './types'
 
 export async function fetchUsageLimits(auth: KiroAuthDetails): Promise<any> {
@@ -6,14 +9,22 @@ export async function fetchUsageLimits(auth: KiroAuthDetails): Promise<any> {
   url.searchParams.set('origin', 'AI_EDITOR')
   url.searchParams.set('resourceType', 'AGENTIC_REQUEST')
   if (auth.profileArn) url.searchParams.set('profileArn', auth.profileArn)
+
+  const cwVer = KIRO_CONSTANTS.CW_CLIENT_VERSION
+  const kiroVer = KIRO_CONSTANTS.KIRO_IDE_VERSION
+  const machineId = getMachineId()
+  const nodeV = process.version.replace('v', '')
+  const ua = `aws-sdk-js/${cwVer} ua/2.1 os/${os.platform()}#${os.release()} lang/js md/nodejs#${nodeV} api/codewhispererstreaming#${cwVer} m/F KiroIDE ${kiroVer} ${machineId}`
+
   try {
     const res = await fetch(url.toString(), {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${auth.access}`,
-        'Content-Type': 'application/json',
-        'x-amzn-kiro-agent-mode': 'vibe',
-        'amz-sdk-request': 'attempt=1; max=1'
+        'amz-sdk-invocation-id': crypto.randomUUID(),
+        'amz-sdk-request': 'attempt=1; max=3',
+        'x-amz-user-agent': `aws-sdk-js/${cwVer} KiroIDE ${kiroVer} ${machineId}`,
+        'user-agent': ua
       }
     })
     if (!res.ok) {

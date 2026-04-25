@@ -61,6 +61,7 @@ export class RequestHandler {
     let reductionFactor = 1.0
     let retry = 0
     let consecutiveNullAccounts = 0
+    let forceRefresh = false
     const retryContext = this.retryStrategy.createContext()
 
     while (true) {
@@ -83,6 +84,11 @@ export class RequestHandler {
 
       consecutiveNullAccounts = 0
       const auth = this.accountManager.toAuthDetails(acc)
+
+      if (forceRefresh) {
+        auth.expires = 0
+        forceRefresh = false
+      }
 
       const tokenResult = await this.tokenRefresher.refreshIfNeeded(acc, auth, showToast)
       if (tokenResult.shouldContinue) {
@@ -128,6 +134,9 @@ export class RequestHandler {
           if (errorResult.newContext) {
             reductionFactor = errorResult.newContext.reductionFactor
             retry = errorResult.newContext.retry
+          }
+          if (errorResult.forceRefresh) {
+            forceRefresh = true
           }
           if (errorResult.switchAccount) {
             continue

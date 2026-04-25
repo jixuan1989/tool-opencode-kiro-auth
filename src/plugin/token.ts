@@ -1,3 +1,4 @@
+import { KIRO_CONSTANTS, getMachineId } from '../constants'
 import { decodeRefreshToken, encodeRefreshToken } from '../kiro/auth'
 import { KiroTokenRefreshError } from './errors'
 import type { KiroAuthDetails, RefreshParts } from './types'
@@ -5,7 +6,6 @@ import type { KiroAuthDetails, RefreshParts } from './types'
 export async function refreshAccessToken(auth: KiroAuthDetails): Promise<KiroAuthDetails> {
   const p = decodeRefreshToken(auth.refresh)
   const isIdc = auth.authMethod === 'idc'
-  const isGoogle = auth.authMethod === 'google'
   const oidcRegion = auth.oidcRegion || auth.region
   const url = isIdc
     ? `https://oidc.${oidcRegion}.amazonaws.com/token`
@@ -26,23 +26,27 @@ export async function refreshAccessToken(auth: KiroAuthDetails): Promise<KiroAut
         refreshToken: p.refreshToken
       }
 
-  const ua = isIdc
-    ? 'aws-sdk-js/3.738.0 ua/2.1 os/other lang/js md/browser#unknown_unknown api/sso-oidc#3.738.0 m/E KiroIDE'
-    : isGoogle
-      ? 'aws-sdk-js/3.0.0 KiroIDE-0.1.0 os/macos lang/js md/nodejs/18.0.0'
-      : 'aws-sdk-js/3.0.0 KiroIDE-0.1.0 os/macos lang/js md/nodejs/18.0.0'
+  const kiroVer = KIRO_CONSTANTS.KIRO_IDE_VERSION
+  const machineId = getMachineId()
+  const socialUa = `KiroIDE-${kiroVer}-${machineId}`
+
+  const cwVer = KIRO_CONSTANTS.CW_CLIENT_VERSION
+  const idcUa = `aws-sdk-js/${cwVer} ua/2.1 os/other lang/js md/browser#unknown_unknown api/sso-oidc#${cwVer} m/F KiroIDE`
+
+  const headers: Record<string, string> = isIdc
+    ? {
+        'Content-Type': 'application/json',
+        'user-agent': idcUa
+      }
+    : {
+        'Content-Type': 'application/json',
+        'User-Agent': socialUa
+      }
 
   try {
     const res = await fetch(url, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        'amz-sdk-request': 'attempt=1; max=1',
-        'x-amzn-kiro-agent-mode': 'vibe',
-        'user-agent': ua,
-        Connection: 'close'
-      },
+      headers,
       body: JSON.stringify(requestBody)
     })
 

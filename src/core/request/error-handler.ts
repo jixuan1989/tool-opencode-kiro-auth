@@ -27,7 +27,12 @@ export class ErrorHandler {
     account: ManagedAccount,
     context: RequestContext,
     showToast: ToastFunction
-  ): Promise<{ shouldRetry: boolean; newContext?: RequestContext; switchAccount?: boolean }> {
+  ): Promise<{
+    shouldRetry: boolean
+    newContext?: RequestContext
+    switchAccount?: boolean
+    forceRefresh?: boolean
+  }> {
     const readBody = async (): Promise<string> => {
       try {
         const body = JSON.parse(await response.clone().text())
@@ -103,10 +108,7 @@ export class ErrorHandler {
       return { shouldRetry: true }
     }
 
-    if (
-      (response.status === 402 || response.status === 403) &&
-      this.accountManager.getAccountCount() > 1
-    ) {
+    if (response.status === 402 || response.status === 403) {
       let errorReason = response.status === 402 ? 'Quota' : 'Forbidden'
       let isPermanent = false
       const errorBody = await response.text()
@@ -127,10 +129,23 @@ export class ErrorHandler {
       if (isPermanent) {
         account.failCount = 10
       }
-      showToast(`${response.status}: ${errorReason}. Switching account...`, 'warning')
-      this.accountManager.markUnhealthy(account, errorReason)
-      await this.repository.batchSave(this.accountManager.getAccounts())
-      return { shouldRetry: true, switchAccount: true }
+
+      if (this.accountManager.getAccountCount() > 1) {
+        showToast(`${response.status}: ${errorReason}. Switching account...`, 'warning')
+        this.accountManager.markUnhealthy(account, errorReason)
+        await this.repository.batchSave(this.accountManager.getAccounts())
+        return { shouldRetry: true, switchAccount: true }
+      }
+
+      // Single account: retry once with forced token refresh before giving up
+      if (response.status === 403 && !isPermanent && context.retry < 1) {
+        showToast(`403: ${errorReason}. Refreshing token and retrying...`, 'warning')
+        return {
+          shouldRetry: true,
+          forceRefresh: true,
+          newContext: { ...context, retry: context.retry + 1 }
+        }
+      }
     }
 
     const reason = await readBody()

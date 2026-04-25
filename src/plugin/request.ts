@@ -1,6 +1,12 @@
 import * as crypto from 'crypto'
 import * as os from 'os'
-import { KIRO_CONSTANTS, buildUrl, extractRegionFromArn, isLongContextModel } from '../constants.js'
+import {
+  KIRO_CONSTANTS,
+  buildUrl,
+  extractRegionFromArn,
+  getMachineId,
+  isLongContextModel
+} from '../constants.js'
 import {
   buildHistory,
   extractToolNamesFromHistory,
@@ -235,23 +241,22 @@ export function transformToCodeWhisperer(
   const osP = os.platform(),
     osR = os.release(),
     nodeV = process.version.replace('v', '')
-  const osN =
-    osP === 'win32' ? `windows#${osR}` : osP === 'darwin' ? `macos#${osR}` : `${osP}#${osR}`
-  const ua = `aws-sdk-js/3.738.0 ua/2.1 os/${osN} lang/js md/nodejs#${nodeV} api/codewhisperer#3.738.0 m/E KiroIDE`
+  const cwVer = KIRO_CONSTANTS.CW_CLIENT_VERSION
+  const kiroVer = KIRO_CONSTANTS.KIRO_IDE_VERSION
+  const machineId = getMachineId()
+  const ua = `aws-sdk-js/${cwVer} ua/2.1 os/${osP}#${osR} lang/js md/nodejs#${nodeV} api/codewhispererstreaming#${cwVer} m/F KiroIDE ${kiroVer} ${machineId}`
   return {
     url: buildUrl(KIRO_CONSTANTS.BASE_URL, extractRegionFromArn(auth.profileArn) ?? auth.region),
     init: {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Accept: 'application/json',
         Authorization: `Bearer ${auth.access}`,
         'amz-sdk-invocation-id': crypto.randomUUID(),
-        'amz-sdk-request': 'attempt=1; max=1',
+        'amz-sdk-request': 'attempt=1; max=3',
         'x-amzn-kiro-agent-mode': 'vibe',
-        'x-amz-user-agent': 'aws-sdk-js/3.738.0 KiroIDE',
-        'user-agent': ua,
-        Connection: 'close'
+        'x-amz-user-agent': `aws-sdk-js/${cwVer} KiroIDE ${kiroVer} ${machineId}`,
+        'user-agent': ua
       },
       body: JSON.stringify(request)
     },
