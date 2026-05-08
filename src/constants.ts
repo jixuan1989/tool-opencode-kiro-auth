@@ -115,7 +115,17 @@ export const MODEL_MAPPING: Record<string, string> = {
   'gpt-oss-120b': 'OPENAI_GPT_OSS_120B_1_0',
   'qwen3-coder-480b': 'QWEN3_CODER_480B_A35B_1_0',
   'minimax-m2': 'MINIMAX_MINIMAX_M2',
-  'kimi-k2-thinking': 'MOONSHOT_KIMI_K2_THINKING'
+  'kimi-k2-thinking': 'MOONSHOT_KIMI_K2_THINKING',
+  'claude-opus-4.6': 'claude-opus-4.6',
+  'claude-opus-4.7': 'claude-opus-4.7',
+  'claude-sonnet-4.6': 'claude-sonnet-4.6',
+  'claude-sonnet-4.5': 'claude-sonnet-4.5',
+  'claude-opus-4.5': 'claude-opus-4.5',
+  'claude-haiku-4.5': 'claude-haiku-4.5',
+  'minimax-m2.1': 'MINIMAX_MINIMAX_M2',
+  'minimax-m2.5': 'MINIMAX_MINIMAX_M2',
+  'deepseek-3.2': 'DEEPSEEK_V3_2',
+  'qwen3-coder-next': 'QWEN3_CODER_480B_A35B_1_0'
 }
 
 export const SUPPORTED_MODELS = Object.keys(MODEL_MAPPING)

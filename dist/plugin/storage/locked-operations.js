@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { existsSync, promises as fs } from 'node:fs';
-import { isPermanentError } from '../health';
+import { isPermanentError } from '../health.js';
 let lockfileModulePromise = null;
 async function getLockfileModule() {
     if (!lockfileModulePromise) {

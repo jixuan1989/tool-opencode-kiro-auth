@@ -1,5 +1,1 @@
-export declare function transformKiroStream(
-  response: Response,
-  model: string,
-  conversationId: string
-): AsyncGenerator<any>
+export declare function transformKiroStream(response: Response, model: string, conversationId: string): AsyncGenerator<any>;

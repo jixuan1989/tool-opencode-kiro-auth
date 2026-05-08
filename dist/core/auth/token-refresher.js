@@ -1,7 +1,7 @@
-import { accessTokenExpired } from '../../kiro/auth';
-import { KiroTokenRefreshError } from '../../plugin/errors';
-import * as logger from '../../plugin/logger';
-import { refreshAccessToken } from '../../plugin/token';
+import { accessTokenExpired } from '../../kiro/auth.js';
+import { KiroTokenRefreshError } from '../../plugin/errors.js';
+import * as logger from '../../plugin/logger.js';
+import { refreshAccessToken } from '../../plugin/token.js';
 export class TokenRefresher {
     config;
     accountManager;

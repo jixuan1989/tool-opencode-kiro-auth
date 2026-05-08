@@ -1,9 +1,9 @@
 import { createHash } from 'node:crypto';
-import { decodeRefreshToken, encodeRefreshToken } from '../kiro/auth';
-import { isPermanentError } from './health';
-import * as logger from './logger';
-import { kiroDb } from './storage/sqlite';
-import { writeToKiroCli } from './sync/kiro-cli';
+import { decodeRefreshToken, encodeRefreshToken } from '../kiro/auth.js';
+import { isPermanentError } from './health.js';
+import * as logger from './logger.js';
+import { kiroDb } from './storage/sqlite.js';
+import { writeToKiroCli } from './sync/kiro-cli.js';
 export function createDeterministicAccountId(email, method, clientId, profileArn) {
     return createHash('sha256')
         .update(`${email}:${method}:${clientId || ''}:${profileArn || ''}`)

@@ -1,6 +1,6 @@
-import type { Database } from 'bun:sqlite'
+import type { DatabaseLike } from './database'
 
-export function runMigrations(db: Database): void {
+export function runMigrations(db: DatabaseLike): void {
   migrateToUniqueRefreshToken(db)
   migrateRealEmailColumn(db)
   migrateUsageTable(db)
@@ -9,7 +9,7 @@ export function runMigrations(db: Database): void {
   migrateDropRefreshTokenUniqueIndex(db)
 }
 
-function migrateToUniqueRefreshToken(db: Database): void {
+function migrateToUniqueRefreshToken(db: DatabaseLike): void {
   const hasIndex = db
     .prepare(
       "SELECT name FROM sqlite_master WHERE type='index' AND name='idx_refresh_token_unique'"
@@ -72,7 +72,7 @@ function migrateToUniqueRefreshToken(db: Database): void {
   }
 }
 
-function migrateRealEmailColumn(db: Database): void {
+function migrateRealEmailColumn(db: DatabaseLike): void {
   const columns = db.prepare('PRAGMA table_info(accounts)').all() as any[]
   const names = new Set(columns.map((c) => c.name))
   if (names.has('real_email')) {
@@ -115,7 +115,7 @@ function migrateRealEmailColumn(db: Database): void {
   }
 }
 
-function migrateUsageTable(db: Database): void {
+function migrateUsageTable(db: DatabaseLike): void {
   const hasUsageTable = db
     .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='usage'")
     .get()
@@ -130,7 +130,7 @@ function migrateUsageTable(db: Database): void {
   }
 }
 
-function migrateStartUrlColumn(db: Database): void {
+function migrateStartUrlColumn(db: DatabaseLike): void {
   const columns = db.prepare('PRAGMA table_info(accounts)').all() as any[]
   const names = new Set(columns.map((c) => c.name))
   if (!names.has('start_url')) {
@@ -138,17 +138,17 @@ function migrateStartUrlColumn(db: Database): void {
   }
 }
 
-function migrateOidcRegionColumn(db: Database): void {
+function migrateOidcRegionColumn(db: DatabaseLike): void {
   const columns = db.prepare('PRAGMA table_info(accounts)').all() as any[]
   const names = new Set(columns.map((c) => c.name))
   if (!names.has('oidc_region')) {
     db.run('ALTER TABLE accounts ADD COLUMN oidc_region TEXT')
   }
   // Backfill: historically `region` was used for both service + OIDC.
-  db.run('UPDATE accounts SET oidc_region = region WHERE oidc_region IS NULL OR oidc_region = \"\"')
+  db.run("UPDATE accounts SET oidc_region = region WHERE oidc_region IS NULL OR oidc_region = ''")
 }
 
-function migrateDropRefreshTokenUniqueIndex(db: Database): void {
+function migrateDropRefreshTokenUniqueIndex(db: DatabaseLike): void {
   // Drop the UNIQUE index on refresh_token — it was only needed for ON CONFLICT(refresh_token)
   // upsert mechanics. Now that we use ON CONFLICT(id), this index is unnecessary and actively
   // harmful: duplicate rows (same account, different legacy vs hash id) share the same

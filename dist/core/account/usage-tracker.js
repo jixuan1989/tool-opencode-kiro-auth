@@ -1,4 +1,4 @@
-import { fetchUsageLimits, updateAccountQuota } from '../../plugin/usage';
+import { fetchUsageLimits, updateAccountQuota } from '../../plugin/usage.js';
 export class UsageTracker {
     config;
     accountManager;

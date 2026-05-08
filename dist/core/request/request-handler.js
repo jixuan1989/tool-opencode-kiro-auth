@@ -1,13 +1,13 @@
-import { isPermanentError } from '../../plugin/health';
-import * as logger from '../../plugin/logger';
-import { transformToCodeWhisperer } from '../../plugin/request';
-import { syncFromKiroCli } from '../../plugin/sync/kiro-cli';
-import { AccountSelector } from '../account/account-selector';
-import { UsageTracker } from '../account/usage-tracker';
-import { TokenRefresher } from '../auth/token-refresher';
-import { ErrorHandler } from './error-handler';
-import { ResponseHandler } from './response-handler';
-import { RetryStrategy } from './retry-strategy';
+import { isPermanentError } from '../../plugin/health.js';
+import * as logger from '../../plugin/logger.js';
+import { transformToCodeWhisperer } from '../../plugin/request.js';
+import { syncFromKiroCli } from '../../plugin/sync/kiro-cli.js';
+import { AccountSelector } from '../account/account-selector.js';
+import { UsageTracker } from '../account/usage-tracker.js';
+import { TokenRefresher } from '../auth/token-refresher.js';
+import { ErrorHandler } from './error-handler.js';
+import { ResponseHandler } from './response-handler.js';
+import { RetryStrategy } from './retry-strategy.js';
 const KIRO_API_PATTERN = /^(https?:\/\/)?q\.[a-z0-9-]+\.amazonaws\.com/;
 export class RequestHandler {
     accountManager;

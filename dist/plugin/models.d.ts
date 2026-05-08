@@ -1,1 +1,1 @@
-export declare function resolveKiroModel(model: string): string
+export declare function resolveKiroModel(model: string): string;

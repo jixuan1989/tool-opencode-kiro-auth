@@ -1,4 +1,4 @@
-import { KIRO_AUTH_SERVICE, KIRO_CONSTANTS, buildUrl, normalizeRegion } from '../constants';
+import { KIRO_AUTH_SERVICE, KIRO_CONSTANTS, buildUrl, normalizeRegion } from '../constants.js';
 export async function authorizeKiroIDC(region, startUrl) {
     const effectiveRegion = normalizeRegion(region);
     const ssoOIDCEndpoint = buildUrl(KIRO_AUTH_SERVICE.SSO_OIDC_ENDPOINT, effectiveRegion);

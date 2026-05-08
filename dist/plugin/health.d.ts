@@ -1,1 +1,1 @@
-export declare function isPermanentError(reason?: string): boolean
+export declare function isPermanentError(reason?: string): boolean;

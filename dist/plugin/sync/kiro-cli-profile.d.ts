@@ -1,1 +1,1 @@
-export declare function readActiveProfileArnFromKiroCli(): string | undefined
+export declare function readActiveProfileArnFromKiroCli(): string | undefined;

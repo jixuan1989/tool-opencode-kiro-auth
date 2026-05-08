@@ -1,4 +1,4 @@
-import { parseEventStream } from '../../plugin/response';
+import { parseEventStream } from '../../plugin/response.js';
 import { transformKiroStream } from '../../plugin/streaming/index.js';
 export class ResponseHandler {
     async handleSuccess(response, model, conversationId, streaming) {

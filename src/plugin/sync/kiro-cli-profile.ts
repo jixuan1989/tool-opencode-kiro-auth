@@ -1,4 +1,4 @@
-import { Database } from 'bun:sqlite'
+import { Database } from '../storage/database'
 import { existsSync } from 'node:fs'
 import { getCliDbPath, safeJsonParse } from './kiro-cli-parser'
 

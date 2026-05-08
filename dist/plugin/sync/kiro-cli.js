@@ -1,12 +1,12 @@
-import { Database } from 'bun:sqlite';
+import { Database } from '../storage/database.js';
 import { existsSync } from 'node:fs';
-import { extractRegionFromArn, normalizeRegion } from '../../constants';
-import { createDeterministicAccountId } from '../accounts';
-import * as logger from '../logger';
-import { kiroDb } from '../storage/sqlite';
-import { fetchUsageLimits } from '../usage';
-import { findClientCredsRecursive, getCliDbPath, makePlaceholderEmail, normalizeExpiresAt, safeJsonParse } from './kiro-cli-parser';
-import { readActiveProfileArnFromKiroCli } from './kiro-cli-profile';
+import { extractRegionFromArn, normalizeRegion } from '../../constants.js';
+import { createDeterministicAccountId } from '../accounts.js';
+import * as logger from '../logger.js';
+import { kiroDb } from '../storage/sqlite.js';
+import { fetchUsageLimits } from '../usage.js';
+import { findClientCredsRecursive, getCliDbPath, makePlaceholderEmail, normalizeExpiresAt, safeJsonParse } from './kiro-cli-parser.js';
+import { readActiveProfileArnFromKiroCli } from './kiro-cli-profile.js';
 export async function syncFromKiroCli() {
     const dbPath = getCliDbPath();
     if (!existsSync(dbPath))

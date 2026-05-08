@@ -125,7 +125,7 @@ function migrateOidcRegionColumn(db) {
         db.run('ALTER TABLE accounts ADD COLUMN oidc_region TEXT');
     }
     // Backfill: historically `region` was used for both service + OIDC.
-    db.run('UPDATE accounts SET oidc_region = region WHERE oidc_region IS NULL OR oidc_region = \"\"');
+    db.run("UPDATE accounts SET oidc_region = region WHERE oidc_region IS NULL OR oidc_region = ''");
 }
 function migrateDropRefreshTokenUniqueIndex(db) {
     // Drop the UNIQUE index on refresh_token — it was only needed for ON CONFLICT(refresh_token)

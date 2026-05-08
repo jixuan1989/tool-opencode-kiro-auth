@@ -1,6 +1,6 @@
 import * as crypto from 'crypto';
 import * as os from 'os';
-import { KIRO_CONSTANTS, getMachineId } from '../constants';
+import { KIRO_CONSTANTS, getMachineId } from '../constants.js';
 export async function fetchUsageLimits(auth) {
     const url = new URL(`https://q.${auth.region}.amazonaws.com/getUsageLimits`);
     url.searchParams.set('isEmailRequired', 'true');

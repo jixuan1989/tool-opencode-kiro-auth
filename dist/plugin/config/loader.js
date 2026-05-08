@@ -1,8 +1,8 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
-import * as logger from '../logger';
-import { AccountSelectionStrategySchema, DEFAULT_CONFIG, KiroConfigSchema, RegionSchema } from './schema';
+import * as logger from '../logger.js';
+import { AccountSelectionStrategySchema, DEFAULT_CONFIG, KiroConfigSchema, RegionSchema } from './schema.js';
 function getConfigDir() {
     const platform = process.platform;
     if (platform === 'win32') {

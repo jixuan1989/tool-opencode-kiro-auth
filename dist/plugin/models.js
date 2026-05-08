@@ -1,8 +1,4 @@
-import { MODEL_MAPPING, SUPPORTED_MODELS } from '../constants';
+import { MODEL_MAPPING } from '../constants.js';
 export function resolveKiroModel(model) {
-    const resolved = MODEL_MAPPING[model];
-    if (!resolved) {
-        throw new Error(`Unsupported model: ${model}. Supported models: ${SUPPORTED_MODELS.join(', ')}`);
-    }
-    return resolved;
+    return MODEL_MAPPING[model] ?? model;
 }

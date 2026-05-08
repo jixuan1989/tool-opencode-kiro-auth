@@ -1,4 +1,4 @@
-import { Database } from 'bun:sqlite'
+import { Database } from '../storage/database'
 import { existsSync } from 'node:fs'
 import { extractRegionFromArn, normalizeRegion } from '../../constants'
 import { createDeterministicAccountId } from '../accounts'

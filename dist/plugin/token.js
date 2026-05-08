@@ -1,6 +1,6 @@
-import { KIRO_CONSTANTS, getMachineId } from '../constants';
-import { decodeRefreshToken, encodeRefreshToken } from '../kiro/auth';
-import { KiroTokenRefreshError } from './errors';
+import { KIRO_CONSTANTS, getMachineId } from '../constants.js';
+import { decodeRefreshToken, encodeRefreshToken } from '../kiro/auth.js';
+import { KiroTokenRefreshError } from './errors.js';
 export async function refreshAccessToken(auth) {
     const p = decodeRefreshToken(auth.refresh);
     const isIdc = auth.authMethod === 'idc';

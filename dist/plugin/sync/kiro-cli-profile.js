@@ -1,6 +1,6 @@
-import { Database } from 'bun:sqlite';
+import { Database } from '../storage/database.js';
 import { existsSync } from 'node:fs';
-import { getCliDbPath, safeJsonParse } from './kiro-cli-parser';
+import { getCliDbPath, safeJsonParse } from './kiro-cli-parser.js';
 export function readActiveProfileArnFromKiroCli() {
     const dbPath = getCliDbPath();
     if (!existsSync(dbPath))

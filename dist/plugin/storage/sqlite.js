@@ -1,9 +1,9 @@
-import { Database } from 'bun:sqlite';
+import { Database } from './database.js';
 import { existsSync, mkdirSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { deduplicateAccounts, mergeAccounts, withDatabaseLock } from './locked-operations';
-import { runMigrations } from './migrations';
+import { deduplicateAccounts, mergeAccounts, withDatabaseLock } from './locked-operations.js';
+import { runMigrations } from './migrations.js';
 function getBaseDir() {
     const p = process.platform;
     if (p === 'win32')
