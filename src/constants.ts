@@ -86,7 +86,7 @@ export const KIRO_CONSTANTS = {
   AXIOS_TIMEOUT: 120000,
   USER_AGENT: 'KiroIDE',
   CW_CLIENT_VERSION: '1.0.34',
-  KIRO_IDE_VERSION: '0.12.224',
+  KIRO_IDE_VERSION: '1.0.794',
   CHAT_TRIGGER_TYPE_MANUAL: 'MANUAL',
   ORIGIN_AI_EDITOR: 'AI_EDITOR'
 }
@@ -109,13 +109,25 @@ export const MODEL_MAPPING: Record<string, string> = {
   'claude-opus-4-6-thinking': 'claude-opus-4.6',
   'claude-opus-4-6-1m': 'claude-opus-4.6-1m',
   'claude-opus-4-6-1m-thinking': 'claude-opus-4.6-1m',
+  'claude-opus-4-7': 'claude-opus-4.7',
+  'claude-opus-4-7-thinking': 'claude-opus-4.7',
+  'claude-opus-4-7-1m': 'claude-opus-4.7-1m',
+  'claude-opus-4-7-1m-thinking': 'claude-opus-4.7-1m',
   'claude-opus-4-8': 'claude-opus-4.8',
   'claude-opus-4-8-thinking': 'claude-opus-4.8',
+  'claude-opus-4-8-1m': 'claude-opus-4.8-1m',
+  'claude-opus-4-8-1m-thinking': 'claude-opus-4.8-1m',
+  'claude-sonnet-5': 'claude-sonnet-5',
+  'claude-sonnet-5-thinking': 'claude-sonnet-5',
+  'claude-sonnet-5-1m': 'claude-sonnet-5-1m',
+  'claude-sonnet-5-1m-thinking': 'claude-sonnet-5-1m',
   'claude-sonnet-4': 'claude-sonnet-4',
   'claude-3-7-sonnet': 'CLAUDE_3_7_SONNET_20250219_V1_0',
   'claude-opus-4.6': 'claude-opus-4.6',
   'claude-opus-4.7': 'claude-opus-4.7',
+  'claude-opus-4.7-1m': 'claude-opus-4.7-1m',
   'claude-opus-4.8': 'claude-opus-4.8',
+  'claude-opus-4.8-1m': 'claude-opus-4.8-1m',
   'claude-sonnet-4.6': 'claude-sonnet-4.6',
   'claude-sonnet-4.5': 'claude-sonnet-4.5',
   'claude-opus-4.5': 'claude-opus-4.5',
@@ -124,7 +136,10 @@ export const MODEL_MAPPING: Record<string, string> = {
   'minimax-m2.5': 'MINIMAX_MINIMAX_M2',
   'deepseek-3.2': 'DEEPSEEK_V3_2',
   'glm-5': 'glm-5',
-  'qwen3-coder-next': 'QWEN3_CODER_480B_A35B_1_0'
+  'qwen3-coder-next': 'QWEN3_CODER_480B_A35B_1_0',
+  'gpt-5-6-sol': 'GPT_5_6_SOL',
+  'gpt-5-6-terra': 'GPT_5_6_TERRA',
+  'gpt-5-6-luna': 'GPT_5_6_LUNA'
 }
 
 export const SUPPORTED_MODELS = Object.keys(MODEL_MAPPING)

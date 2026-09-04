@@ -1,4 +1,5 @@
 import { parseEventStream } from '../../plugin/response.js';
+import * as logger from '../../plugin/logger.js';
 import { transformKiroStream } from '../../plugin/streaming/index.js';
 export class ResponseHandler {
     async handleSuccess(response, model, conversationId, streaming) {
@@ -9,16 +10,37 @@ export class ResponseHandler {
     }
     async handleStreaming(response, model, conversationId) {
         const s = transformKiroStream(response, model, conversationId);
+        let hasYielded = false;
         return new Response(new ReadableStream({
             async start(c) {
                 try {
                     for await (const e of s) {
+                        hasYielded = true;
                         c.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(e)}\n\n`));
                     }
                     c.close();
                 }
                 catch (err) {
-                    c.error(err);
+                    logger.error('Stream interrupted:', err?.message ?? err);
+                    if (hasYielded) {
+                        const stopEvent = {
+                            id: conversationId,
+                            object: 'chat.completion.chunk',
+                            created: Math.floor(Date.now() / 1000),
+                            model,
+                            choices: [{ index: 0, delta: {}, finish_reason: 'stop' }]
+                        };
+                        try {
+                            c.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(stopEvent)}\n\ndata: [DONE]\n\n`));
+                            c.close();
+                        }
+                        catch {
+                            c.error(err);
+                        }
+                    }
+                    else {
+                        c.error(err);
+                    }
                 }
             }
         }), { headers: { 'Content-Type': 'text/event-stream' } });

@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto'
 import { existsSync, promises as fs } from 'node:fs'
 import { isPermanentError } from '../health'
+import { warn } from '../logger'
 import type { ManagedAccount } from '../types'
 
 type ProperLockfileModule = {
@@ -55,7 +56,7 @@ export async function withDatabaseLock<T>(dbPath: string, fn: () => Promise<T>):
       try {
         await release()
       } catch (e) {
-        console.warn('Failed to release lock:', e)
+        warn('Failed to release lock:', e)
       }
     }
   }

@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { existsSync, promises as fs } from 'node:fs';
 import { isPermanentError } from '../health.js';
+import { warn } from '../logger.js';
 let lockfileModulePromise = null;
 async function getLockfileModule() {
     if (!lockfileModulePromise) {
@@ -47,7 +48,7 @@ export async function withDatabaseLock(dbPath, fn) {
                 await release();
             }
             catch (e) {
-                console.warn('Failed to release lock:', e);
+                warn('Failed to release lock:', e);
             }
         }
     }

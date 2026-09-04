@@ -37,13 +37,28 @@ const BUILTIN_MODELS = {
   'claude-opus-4-6-thinking': createModel('Claude Opus 4.6 Thinking'),
   'claude-opus-4-6-1m': createModel('Claude Opus 4.6 (1M context)', 1000000),
   'claude-opus-4-6-1m-thinking': createModel('Claude Opus 4.6 (1M context, thinking)', 1000000),
+  'claude-opus-4-7': createModel('Claude Opus 4.7'),
+  'claude-opus-4-7-thinking': createModel('Claude Opus 4.7 Thinking'),
+  'claude-opus-4-7-1m': createModel('Claude Opus 4.7 (1M context)', 1000000),
+  'claude-opus-4-7-1m-thinking': createModel('Claude Opus 4.7 (1M context, thinking)', 1000000),
+  'claude-opus-4-8': createModel('Claude Opus 4.8'),
+  'claude-opus-4-8-thinking': createModel('Claude Opus 4.8 Thinking'),
+  'claude-opus-4-8-1m': createModel('Claude Opus 4.8 (1M context)', 1000000),
+  'claude-opus-4-8-1m-thinking': createModel('Claude Opus 4.8 (1M context, thinking)', 1000000),
+  'claude-sonnet-5': createModel('Claude Sonnet 5', 1000000),
+  'claude-sonnet-5-thinking': createModel('Claude Sonnet 5 Thinking', 1000000),
+  'claude-sonnet-5-1m': createModel('Claude Sonnet 5 (1M context)', 1000000),
+  'claude-sonnet-5-1m-thinking': createModel('Claude Sonnet 5 (1M context, thinking)', 1000000),
   'claude-sonnet-4': createModel('Claude Sonnet 4'),
   'claude-3-7-sonnet': createModel('Claude 3.7 Sonnet'),
   'nova-swe': createModel('Amazon Nova SWE'),
   'gpt-oss-120b': createModel('GPT OSS 120B'),
   'qwen3-coder-480b': createModel('Qwen3 Coder 480B'),
   'minimax-m2': createModel('MiniMax M2'),
-  'kimi-k2-thinking': createModel('Kimi K2 Thinking')
+  'kimi-k2-thinking': createModel('Kimi K2 Thinking'),
+  'gpt-5-6-sol': createModel('GPT-5.6 Sol', 272000),
+  'gpt-5-6-terra': createModel('GPT-5.6 Terra', 272000),
+  'gpt-5-6-luna': createModel('GPT-5.6 Luna', 272000)
 }
 
 function parseArgs(argv) {

@@ -44,6 +44,27 @@ export class ErrorHandler {
 
     if (response.status === 400) {
       const reason = await readBody()
+      if (
+        reason.includes('CONTENT_LENGTH_EXCEEDS_THRESHOLD') ||
+        reason.includes('Input is too long')
+      ) {
+        // Aggressively reduce: halve factor each time, minimum 0.05 (keeps ~2-4 recent turns)
+        if (context.reductionFactor > 0.05) {
+          const newFactor = Math.max(0.05, context.reductionFactor * 0.5)
+          showToast(
+            `Context too long. Retrying with ${Math.round(newFactor * 100)}% history...`,
+            'warning'
+          )
+          return {
+            shouldRetry: true,
+            newContext: { ...context, reductionFactor: newFactor }
+          }
+        }
+        // Even at 5% still too long — this should be nearly impossible but handle gracefully
+        throw new Error(
+          'Context too long for Kiro API even after aggressive truncation. Please start a new conversation.'
+        )
+      }
       if (context.reductionFactor > 0.4) {
         const newFactor = context.reductionFactor - 0.2
         showToast(

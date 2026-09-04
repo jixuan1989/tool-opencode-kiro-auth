@@ -1,6 +1,6 @@
 import { StreamEvent } from './types.js'
 
-export function convertToOpenAI(event: StreamEvent, id: string, model: string): any {
+export function convertToOpenAI(event: StreamEvent, id: string, model: string): any | null {
   const base = {
     id,
     object: 'chat.completion.chunk',
@@ -62,6 +62,12 @@ export function convertToOpenAI(event: StreamEvent, id: string, model: string): 
       completion_tokens: event.usage?.output_tokens || 0,
       total_tokens: (event.usage?.input_tokens || 0) + (event.usage?.output_tokens || 0)
     }
+  }
+
+  // Skip events that produce empty choices (content_block_stop, message_stop, etc.)
+  // OpenCode ≥1.15 rejects chunks with empty choices arrays
+  if (base.choices.length === 0) {
+    return null
   }
 
   return base

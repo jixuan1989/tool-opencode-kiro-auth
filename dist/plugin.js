@@ -5,20 +5,20 @@ import { AccountCache } from './infrastructure/database/account-cache.js';
 import { AccountRepository } from './infrastructure/database/account-repository.js';
 import { AccountManager } from './plugin/accounts.js';
 import { loadConfig } from './plugin/config/index.js';
+import { debug, error as logError } from './plugin/logger.js';
 const _origPrepareStackTrace = Error.prepareStackTrace;
 Error.prepareStackTrace = (error, structuredStack) => {
     if (error.name === 'ProviderInitError') {
         const cause = error.cause;
         const data = error.data;
-        console.error('[kiro-auth] ===== ProviderInitError INTERCEPTED =====');
-        console.error('[kiro-auth]   providerID:', data?.providerID ?? 'unknown');
-        console.error('[kiro-auth]   cause type:', typeof cause, cause?.constructor?.name ?? 'n/a');
-        console.error('[kiro-auth]   cause message:', cause?.message ?? String(cause));
-        console.error('[kiro-auth]   cause stack:', cause?.stack ?? 'no stack');
-        if (cause?.cause) {
-            console.error('[kiro-auth]   nested cause:', cause.cause?.message ?? cause.cause);
-        }
-        console.error('[kiro-auth] ========================================');
+        logError('ProviderInitError INTERCEPTED', {
+            providerID: data?.providerID ?? 'unknown',
+            causeType: typeof cause,
+            causeConstructor: cause?.constructor?.name ?? 'n/a',
+            causeMessage: cause?.message ?? String(cause),
+            causeStack: cause?.stack ?? 'no stack',
+            nestedCause: cause?.cause?.message ?? cause?.cause ?? null
+        });
     }
     if (_origPrepareStackTrace) {
         Error.prepareStackTrace = _origPrepareStackTrace;
@@ -46,23 +46,21 @@ export const createKiroPlugin = (id) => async ({ client, directory }) => {
             provider: id,
             loader: async (getAuth) => {
                 try {
-                    console.error('[kiro-auth] loader: starting...');
+                    debug('loader: starting...');
                     await getAuth();
-                    console.error('[kiro-auth] loader: getAuth() done');
+                    debug('loader: getAuth() done');
                     await authHandler.initialize();
-                    console.error('[kiro-auth] loader: authHandler.initialize() done');
+                    debug('loader: authHandler.initialize() done');
                     const result = {
                         apiKey: '',
                         baseURL: KIRO_CONSTANTS.BASE_URL.replace('/generateAssistantResponse', '').replace('{{region}}', config.default_region || 'us-east-1'),
                         fetch: (input, init) => requestHandler.handle(input, init, showToast)
                     };
-                    console.error('[kiro-auth] loader: returning options keys:', Object.keys(result));
-                    console.error('[kiro-auth] loader: apiKey=' + JSON.stringify(result.apiKey) + ' baseURL=' + result.baseURL + ' fetch=' + typeof result.fetch);
+                    debug('loader: returning', JSON.stringify({ keys: Object.keys(result), baseURL: result.baseURL }));
                     return result;
                 }
                 catch (err) {
-                    console.error('[kiro-auth] loader ERROR:', err?.message ?? err);
-                    console.error('[kiro-auth] loader stack:', err?.stack ?? 'no stack');
+                    logError('loader ERROR:', err?.message ?? err, err?.stack ?? '');
                     throw err;
                 }
             },
@@ -71,7 +69,6 @@ export const createKiroPlugin = (id) => async ({ client, directory }) => {
     };
 };
 export const KiroOAuthPlugin = createKiroPlugin(KIRO_PROVIDER_ID);
-/** New-style PluginModule export for OpenCode ≥ 1.14 */
 const pluginModule = {
     id: 'kiro-auth',
     server: KiroOAuthPlugin

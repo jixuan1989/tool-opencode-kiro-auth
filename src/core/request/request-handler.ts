@@ -108,11 +108,11 @@ export class RequestHandler {
         const res = await fetch(prep.url, prep.init)
 
         if (!res.ok) {
-          console.error(`[kiro-auth] !res.ok: ${res.status} ${res.statusText} url:`, prep.url)
-          console.error(`[kiro-auth] request headers:`, JSON.stringify(prep.init?.headers ?? {}))
+          logger.error(`!res.ok: ${res.status} ${res.statusText} url: ${prep.url}`)
+          logger.debug('request headers:', JSON.stringify(prep.init?.headers ?? {}))
           const reqBody =
             typeof prep.init?.body === 'string' ? prep.init.body.slice(0, 1000) : '(non-string)'
-          console.error(`[kiro-auth] request body (first 1000):`, reqBody)
+          logger.debug('request body (first 1000):', reqBody)
         }
 
         if (apiTimestamp) {
@@ -154,8 +154,8 @@ export class RequestHandler {
 
         this.logError(prep, res, acc, apiTimestamp)
         const errorBody = await res.text().catch(() => '')
-        console.error(`[kiro-auth] ${res.status} response:`, errorBody.slice(0, 2000))
-        console.error(`[kiro-auth] request model:`, model, 'think:', think)
+        logger.error(`${res.status} response: ${errorBody.slice(0, 2000)}`)
+        logger.debug('request model:', model, 'think:', think)
         throw new Error(`Kiro Error: ${res.status}: ${errorBody.slice(0, 500)}`)
       } catch (e) {
         const networkResult = await this.errorHandler.handleNetworkError(

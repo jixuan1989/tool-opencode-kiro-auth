@@ -6,6 +6,11 @@ import { createTextDeltaEvents, createThinkingDeltaEvents, stopBlock } from './s
 import { THINKING_END_TAG, THINKING_START_TAG } from './types.js';
 export async function* transformKiroStream(response, model, conversationId) {
     const thinkingRequested = true;
+    function* yieldIfValid(event, convId, mdl) {
+        const chunk = convertToOpenAI(event, convId, mdl);
+        if (chunk !== null)
+            yield chunk;
+    }
     const streamState = {
         thinkingRequested,
         buffer: '',
@@ -45,7 +50,7 @@ export async function* transformKiroStream(response, model, conversationId) {
                     totalContent += event.data;
                     if (!thinkingRequested) {
                         for (const ev of createTextDeltaEvents(event.data, streamState)) {
-                            yield convertToOpenAI(ev, conversationId, model);
+                            yield* yieldIfValid(ev, conversationId, model);
                         }
                         continue;
                     }
@@ -110,7 +115,7 @@ export async function* transformKiroStream(response, model, conversationId) {
                         }
                     }
                     for (const ev of deltaEvents) {
-                        yield convertToOpenAI(ev, conversationId, model);
+                        yield* yieldIfValid(ev, conversationId, model);
                     }
                 }
                 else if (event.type === 'toolUse') {
@@ -164,21 +169,21 @@ export async function* transformKiroStream(response, model, conversationId) {
         if (thinkingRequested && streamState.buffer) {
             if (streamState.inThinking) {
                 for (const ev of createThinkingDeltaEvents(streamState.buffer, streamState))
-                    yield convertToOpenAI(ev, conversationId, model);
+                    yield* yieldIfValid(ev, conversationId, model);
                 streamState.buffer = '';
                 for (const ev of createThinkingDeltaEvents('', streamState))
-                    yield convertToOpenAI(ev, conversationId, model);
+                    yield* yieldIfValid(ev, conversationId, model);
                 for (const ev of stopBlock(streamState.thinkingBlockIndex, streamState))
-                    yield convertToOpenAI(ev, conversationId, model);
+                    yield* yieldIfValid(ev, conversationId, model);
             }
             else {
                 for (const ev of createTextDeltaEvents(streamState.buffer, streamState))
-                    yield convertToOpenAI(ev, conversationId, model);
+                    yield* yieldIfValid(ev, conversationId, model);
                 streamState.buffer = '';
             }
         }
         for (const ev of stopBlock(streamState.textBlockIndex, streamState))
-            yield convertToOpenAI(ev, conversationId, model);
+            yield* yieldIfValid(ev, conversationId, model);
         const bracketToolCalls = parseBracketToolCalls(totalContent);
         if (bracketToolCalls.length > 0) {
             for (const btc of bracketToolCalls) {
@@ -196,7 +201,7 @@ export async function* transformKiroStream(response, model, conversationId) {
                 if (!tc)
                     continue;
                 const blockIndex = baseIndex + i;
-                yield convertToOpenAI({
+                yield* yieldIfValid({
                     type: 'content_block_start',
                     index: blockIndex,
                     content_block: {
@@ -214,7 +219,7 @@ export async function* transformKiroStream(response, model, conversationId) {
                 catch (e) {
                     inputJson = tc.input;
                 }
-                yield convertToOpenAI({
+                yield* yieldIfValid({
                     type: 'content_block_delta',
                     index: blockIndex,
                     delta: {
@@ -222,7 +227,7 @@ export async function* transformKiroStream(response, model, conversationId) {
                         partial_json: inputJson
                     }
                 }, conversationId, model);
-                yield convertToOpenAI({ type: 'content_block_stop', index: blockIndex }, conversationId, model);
+                yield* yieldIfValid({ type: 'content_block_stop', index: blockIndex }, conversationId, model);
             }
         }
         outputTokens = estimateTokens(totalContent);
@@ -230,7 +235,7 @@ export async function* transformKiroStream(response, model, conversationId) {
             const totalTokens = Math.round((200000 * contextUsagePercentage) / 100);
             inputTokens = Math.max(0, totalTokens - outputTokens);
         }
-        yield convertToOpenAI({
+        yield* yieldIfValid({
             type: 'message_delta',
             delta: { stop_reason: toolCalls.length > 0 ? 'tool_use' : 'end_turn' },
             usage: {
@@ -240,7 +245,7 @@ export async function* transformKiroStream(response, model, conversationId) {
                 cache_read_input_tokens: 0
             }
         }, conversationId, model);
-        yield convertToOpenAI({ type: 'message_stop' }, conversationId, model);
+        yield* yieldIfValid({ type: 'message_stop' }, conversationId, model);
     }
     finally {
         reader.releaseLock();
